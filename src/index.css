@@ -1,0 +1,138 @@
+/* Form Component Styles */
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #111827;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f3f4f6;
+}
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+ 
+  padding-bottom: 20px;
+}
+.header__buttons{
+  display: flex;
+  gap: 10px;
+}
+
+.header__button {
+  background: #111827 ;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  
+}
+
+
+.player-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  max-width: 360px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .player-form {
+    max-width: 100%;
+    margin: 16px;
+  }
+}
+
+.player-form__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.player-form__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.player-form__color-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+}
+
+.player-form__label {
+  display: grid;
+  gap: 6px;
+}
+
+.player-form__label-text {
+  font-weight: 600;
+}
+
+.player-form__input,
+.player-form__select {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0 12px;
+  font-size: 1rem;
+  outline: none;
+  background: #f9fafb;
+}
+
+.player-form__select {
+  cursor: pointer;
+}
+
+.player-form__error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.player-form__submit {
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.player-form__submit:active {
+  transform: translateY(1px);
+}
+
+.player-form__button-container{
+  display: flex;
+  justify-content: space-between;
+} 
+.player-form__button-container .player-form__submit{
+  width: 48%;
+}
