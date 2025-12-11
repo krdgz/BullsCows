@@ -2,6 +2,7 @@
 import { useState } from "react"
 import Header from "./Components/Header"
 import Footer from "./Components/Footer"
+import InstallPrompt from "./Components/InstallPrompt"
 import { COLOR_OPTIONS } from "./consts"
 import FormAddPlayer from "./Components/FormAddPlayer"
 import GamePlay from "./Components/GamePlay"
@@ -149,7 +150,7 @@ function App() {
           githubUrl={"https://github.com/krdgz/BullsCows"}
         />
       )}
-      
+      <InstallPrompt />
     </>
   )
 }
