@@ -9,12 +9,14 @@ import { clearAll } from "./storage";
  * @param {function} setPlayer2 - Resetear jugador 2
  * @param {object} COLOR_OPTIONS - Opciones de color por defecto
  * @param {function} setGameEnded - Resetear estado de finalización
+ * @param {function} setSetupProgress - Resetear progreso de setup
  */
-export async function resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded) {
+export async function resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded, setSetupProgress) {
   setGameStarted(false);
   setGameEnded(false);
   setCurrentPlayer(1);
   setAttempts({ 1: [], 2: [] });
+  setSetupProgress({ player1Done: false, player2Done: false });
   setPlayer1({
     name: "",
     secretNumber: "",

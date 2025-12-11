@@ -9,7 +9,7 @@ import GameResults from "./Components/GameResults"
 import WinnerModal from "./Components/WinnerModal"
 import Help from "./Components/Help"
 import { resetGame } from "./utils/resetGame"
-import { savePlayers, loadPlayers, saveGameState, loadGameState, getAttempts } from "./utils/storage"
+import { savePlayers, loadPlayers, saveGameState, loadGameState, getAttempts, saveSetupProgress, loadSetupProgress } from "./utils/storage"
 import { encryptSecret, decryptSecret } from "./utils/crypto"
 import { useEffect } from "react"
 
@@ -32,6 +32,7 @@ function App() {
   const [winnerModal, setWinnerModal] = useState({ open: false, player: null });
   const [helpOpen, setHelpOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [setupProgress, setSetupProgress] = useState({ player1Done: false, player2Done: false });
 
   useEffect(() => {
     const handleHash = () => setHelpOpen(window.location.hash === "#help");
@@ -52,13 +53,14 @@ function App() {
     if (!hydrated) return; // evitar escribir antes de cargar desde DB
     (async () => {
       await saveGameState({ gameStarted, gameEnded, currentPlayer });
+      await saveSetupProgress(setupProgress.player1Done, setupProgress.player2Done);
       if (player1.secretNumber || player2.secretNumber) {
         const p1Enc = player1.secretNumber ? await encryptSecret(player1.secretNumber, 'session-pass') : '';
         const p2Enc = player2.secretNumber ? await encryptSecret(player2.secretNumber, 'session-pass') : '';
         await savePlayers({ ...player1, secretEnc: p1Enc }, { ...player2, secretEnc: p2Enc });
       }
     })();
-  }, [hydrated, gameStarted, gameEnded, currentPlayer, player1, player2]);
+  }, [hydrated, gameStarted, gameEnded, currentPlayer, player1, player2, setupProgress]);
 
   // Intento de carga al inicio (no bloqueante)
   useEffect(() => {
@@ -69,6 +71,9 @@ function App() {
         setGameEnded(Boolean(state.gameEnded));
         setCurrentPlayer(state.currentPlayer || 1);
       }
+      const progress = await loadSetupProgress();
+      setSetupProgress(progress);
+      
       const { p1, p2 } = await loadPlayers();
       if (p1) {
         const secretNumber = p1.secretEnc ? await decryptSecret(p1.secretEnc, 'session-pass') : '';
@@ -88,21 +93,25 @@ function App() {
     <>
       <main className="main">
         <Header />
-        {!hydrated ? null : !gameStarted ? (
-          <FormAddPlayer
-            player = {currentPlayer ===1 ? player1:player2 }
-            setPlayer = {currentPlayer ===1 ? setPlayer1: setPlayer2}
-            blockedColor={currentPlayer === 1 ? player2.color : player1.color}
-            setCurrentStep={setCurrentPlayer}
-            setGameStarted={setGameStarted}
-            currentStep = {currentPlayer}
-          />
-        ) : gameEnded ? (
+        {!hydrated ? null : gameEnded ? (
           <GameResults
             player1={player1}
             player2={player2}
             attempts={attempts}
-            onNewGame={async () => await resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded)}
+            onNewGame={async () => await resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded, setSetupProgress)}
+          />
+        ) : !setupProgress.player1Done || !setupProgress.player2Done ? (
+          <FormAddPlayer
+            player={!setupProgress.player1Done ? player1 : player2}
+            setPlayer={!setupProgress.player1Done ? setPlayer1 : setPlayer2}
+            blockedColor={!setupProgress.player1Done ? player2.color : player1.color}
+            setGameStarted={setGameStarted}
+            currentStep={!setupProgress.player1Done ? 1 : 2}
+            onStepComplete={(step) => {
+              const updated = { ...setupProgress, [step === 1 ? 'player1Done' : 'player2Done']: true };
+              setSetupProgress(updated);
+              saveSetupProgress(updated.player1Done, updated.player2Done);
+            }}
           />
         ) : (
           <GamePlay 

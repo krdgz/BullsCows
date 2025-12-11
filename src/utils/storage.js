@@ -33,9 +33,18 @@ export async function saveGameState(state) {
   await db.game.put({ key: 'state', value: state });
 }
 
+export async function saveSetupProgress(player1Done, player2Done) {
+  await db.game.put({ key: 'setupProgress', value: { player1Done, player2Done } });
+}
+
 export async function loadGameState() {
   const row = await db.game.get('state');
   return row?.value || null;
+}
+
+export async function loadSetupProgress() {
+  const row = await db.game.get('setupProgress');
+  return row?.value || { player1Done: false, player2Done: false };
 }
 
 export async function addAttempt(player, attempt) {

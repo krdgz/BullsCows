@@ -8,9 +8,8 @@ export default function FormAddPlayer({
     setPlayer,
     blockedColor,
     currentStep,
-    setCurrentStep,
-    setGameStarted
-
+    setGameStarted,
+    onStepComplete
 }) {
     const getAvailableOptions = () => COLOR_OPTIONS.filter((option) => option.value !== blockedColor);
 
@@ -68,15 +67,16 @@ export default function FormAddPlayer({
         if (!validateAndNavigate()) return;
 
         if (currentStep === 1) {
-            setCurrentStep(2);
+            onStepComplete?.(1);
         } else {
+            onStepComplete?.(2);
             setGameStarted(true);
         }
     }
 
     function handleBack() {
         if (!validateAndNavigate()) return;
-        setCurrentStep(1);
+        onStepComplete?.(1);
     }
     
 
