@@ -17,41 +17,49 @@ export default function FormAddPlayer({
     const [error, setError] = useState("");
     const title = currentStep === 1 ? "Jugador 1" : "Jugador 2";
 
-
-
     useEffect(() => {
+        setName(player.name || "");
+        setSecretNumber(player.secretNumber || "");
+        setColor(player.color || COLOR_OPTIONS[0].value);
+    }, [currentStep]);
 
-        setName(player.name);
-        setSecretNumber(player.secretNumber);
-        setColor(player.color);
-
-    }, [player])
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        const digitsOnly = /^[0-9]{4}$/;
-        if (!digitsOnly.test(secretNumber)) {
-            setError("Ingresa un número de 4 cifras (solo dígitos).");
-            return;
-        }
-        if (new Set(secretNumber).size !== 4) {
-            setError("El número secreto no debe tener cifras repetidas.");
-            return;
-        }
-        setError("");
-        //save
+    // Guardar automáticamente los cambios en el estado padre
+    useEffect(() => {
         setPlayer({
             name,
             secretNumber,
             color
         });
-        //navigate
+    }, [name, secretNumber, color]);
+
+    function validateAndNavigate() {
+        const digitsOnly = /^[0-9]{4}$/;
+        if (!digitsOnly.test(secretNumber)) {
+            setError("Ingresa un número de 4 cifras (solo dígitos).");
+            return false;
+        }
+        if (new Set(secretNumber).size !== 4) {
+            setError("El número secreto no debe tener cifras repetidas.");
+            return false;
+        }
+        setError("");
+        return true;
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        if (!validateAndNavigate()) return;
+
         if (currentStep === 1) {
             setCurrentStep(2);
         } else {
-            setGameStarted(true)
+            setGameStarted(true);
         }
+    }
 
+    function handleBack() {
+        if (!validateAndNavigate()) return;
+        setCurrentStep(1);
     }
     
 
@@ -115,7 +123,7 @@ export default function FormAddPlayer({
                 {currentStep === 2 && (
                     <button
                         type="button"
-                        onClick={() => setCurrentStep(1)}
+                        onClick={handleBack}
                         className="player-form__button"
                     >
                         Jugador 1
