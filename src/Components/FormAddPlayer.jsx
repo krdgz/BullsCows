@@ -6,22 +6,34 @@ import { useEffect } from "react";
 export default function FormAddPlayer({
     player,
     setPlayer,
+    blockedColor,
     currentStep,
     setCurrentStep,
     setGameStarted
 
 }) {
+    const getAvailableOptions = () => COLOR_OPTIONS.filter((option) => option.value !== blockedColor);
+
     const [name, setName] = useState(player.name || "");
     const [secretNumber, setSecretNumber] = useState(player.secretNumber || "");
-    const [color, setColor] = useState(player.color || COLOR_OPTIONS[0].value);
+    const [color, setColor] = useState(() => {
+        const available = getAvailableOptions();
+        if (player.color && player.color !== blockedColor) return player.color;
+        return available[0]?.value || "";
+    });
     const [error, setError] = useState("");
     const title = currentStep === 1 ? "Jugador 1" : "Jugador 2";
 
     useEffect(() => {
+        const available = getAvailableOptions();
         setName(player.name || "");
         setSecretNumber(player.secretNumber || "");
-        setColor(player.color || COLOR_OPTIONS[0].value);
-    }, [currentStep]);
+        if (player.color && player.color !== blockedColor) {
+            setColor(player.color);
+        } else {
+            setColor(available[0]?.value || "");
+        }
+    }, [currentStep, blockedColor]);
 
     // Guardar automáticamente los cambios en el estado padre
     useEffect(() => {
@@ -34,6 +46,11 @@ export default function FormAddPlayer({
 
     function validateAndNavigate() {
         const digitsOnly = /^[0-9]{4}$/;
+        if(secretNumber[0] === "0"){  
+            setError("El número secreto no puede comenzar con 0.")
+            return false
+        }
+
         if (!digitsOnly.test(secretNumber)) {
             setError("Ingresa un número de 4 cifras (solo dígitos).");
             return false;
@@ -89,13 +106,14 @@ export default function FormAddPlayer({
             <label className="player-form__label">
                 <span className="player-form__label-text">Número secreto (4 cifras)</span>
                 <input
-                    type="text"
+                    type="password"
                     value={secretNumber}
                     onChange={(e) => setSecretNumber(e.target.value.replace(/\D+/g, "").slice(0, 4))}
                     placeholder="0000"
                     inputMode="numeric"
                     pattern="[0-9]{4}"
                     className="player-form__input"
+                    autoComplete="off"
                 />
             </label>
 
@@ -106,7 +124,7 @@ export default function FormAddPlayer({
                     onChange={(e) => setColor(e.target.value)}
                     className="player-form__select"
                 >
-                    {COLOR_OPTIONS.map((option) => (
+                    {getAvailableOptions().map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}
                         </option>
@@ -124,12 +142,12 @@ export default function FormAddPlayer({
                     <button
                         type="button"
                         onClick={handleBack}
-                        className="player-form__button"
+                        className="player-form__submit"
                     >
                         Jugador 1
                     </button>
                 )}
-                <button type="submit" className="player-form__button">
+                <button type="submit" style={{background: color}} className="player-form__submit">
                     {currentStep === 1 ? "Siguiente" : "Iniciar juego"}
                 </button>
             </div>

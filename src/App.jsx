@@ -1,8 +1,13 @@
 
 import { useState } from "react"
 import Header from "./Components/Header"
+import Footer from "./Components/Footer"
 import { COLOR_OPTIONS } from "./consts"
 import FormAddPlayer from "./Components/FormAddPlayer"
+import GamePlay from "./Components/GamePlay"
+import GameResults from "./Components/GameResults"
+import WinnerModal from "./Components/WinnerModal"
+import { resetGame } from "./utils/resetGame"
 import { useEffect } from "react"
 
 
@@ -15,10 +20,13 @@ function App() {
   const [player2, setPlayer2] = useState({
     name: "",
     secretNumber: "",
-    color: COLOR_OPTIONS[1].value
+    color: ""
   })
   const [gameStarted, setGameStarted] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1); // 1 = player1, 2 = player2
+  const [gameEnded, setGameEnded] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState(1); // Turno actual
+  const [attempts, setAttempts] = useState({ 1: [], 2: [] });
+  const [winnerModal, setWinnerModal] = useState({ open: false, player: null });
 
   useEffect(()=>{
     if(gameStarted){
@@ -31,19 +39,45 @@ function App() {
     <>
       <main className="main">
         <Header />
-        {!gameStarted ?
+        {!gameStarted ? (
           <FormAddPlayer
-            player = {currentStep ===1 ? player1:player2 }
-            setPlayer = {currentStep ===1 ? setPlayer1: setPlayer2}
-            setCurrentStep={setCurrentStep}
+            player = {currentPlayer ===1 ? player1:player2 }
+            setPlayer = {currentPlayer ===1 ? setPlayer1: setPlayer2}
+            blockedColor={currentPlayer === 1 ? player2.color : player1.color}
+            setCurrentStep={setCurrentPlayer}
             setGameStarted={setGameStarted}
-            currentStep = {currentStep}
+            currentStep = {currentPlayer}
           />
-          : (
-            <h1>Hello ping</h1>
-          )}
+        ) : gameEnded ? (
+          <GameResults
+            player1={player1}
+            player2={player2}
+            attempts={attempts}
+            onNewGame={() => resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded)}
+          />
+        ) : (
+          <GamePlay 
+            player1={player1}
+            player2={player2}
+            currentPlayer={currentPlayer}
+            setCurrentPlayer={setCurrentPlayer}
+            attempts={attempts}
+            setAttempts={setAttempts}
+            onWin={(player) => setWinnerModal({ open: true, player })}
+          />
+        )}
+        <Footer />
       </main>
-
+      {winnerModal.open && (
+        <WinnerModal
+          player={winnerModal.player}
+          onClose={() => {
+            setWinnerModal({ open: false, player: null });
+            setGameEnded(true);
+          }}
+        />
+      )}
+      
     </>
   )
 }
