@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { calculateResult } from "../utils/gameLogic";
+import { addAttempt } from "../utils/storage";
 import AttemptsList from "./AttemptsList";
 import SurrenderModal from "./SurrenderModal";
 import confetti from "canvas-confetti";
 
-export default function GamePlay({ player1, player2, currentPlayer, setCurrentPlayer, attempts, setAttempts, onWin, onSurrender }) {
+export default function GamePlay({ player1, player2, currentPlayer, setCurrentPlayer, attempts, setAttempts, onWin }) {
     const isPlayer1 = currentPlayer === 1;
     const activePlayer = isPlayer1 ? player1 : player2;
     const opponentPlayer = isPlayer1 ? player2 : player1;
@@ -14,23 +15,28 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [showSurrenderModal, setShowSurrenderModal] = useState(false);
 
-    const handleGuess = (e) => {
+    const handleGuess = async (e) => {
         e.preventDefault();
         if (guess.length !== 4) return;
 
         const { bulls, cows } = calculateResult(opponentPlayer.secretNumber, guess);
+        const entry = { guess, bulls, cows, ts: Date.now() };
+
         setResult({ bulls, cows });
         setIsSubmitted(true);
         if (bulls === 4) {
-            confetti()
+            confetti();
             onWin?.(activePlayer);
         }
-        setAttempts((prev) => {
-            const updated = { ...prev };
-            const newEntry = { guess, bulls, cows, ts: Date.now() };
-            updated[currentPlayer] = [newEntry, ...(prev[currentPlayer] || [])];
-            return updated;
-        });
+        setAttempts((prev) => ({
+            ...prev,
+            [currentPlayer]: [entry, ...(prev[currentPlayer] || [])]
+        }));
+        try {
+            await addAttempt(currentPlayer, entry);
+        } catch (err) {
+            console.error("Persistencia de intento fallida", err);
+        }
     };
 
     const handleNext = () => {

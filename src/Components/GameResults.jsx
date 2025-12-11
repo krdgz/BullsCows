@@ -8,7 +8,6 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
   const [activeTab, setActiveTab] = useState(1);
   const [showNewGameModal, setShowNewGameModal] = useState(false);
 
-  const activePlayer = activeTab === 1 ? player1 : player2;
   const activeAttempts = attempts[activeTab] || [];
 
   const handleNewGame = () => {
