@@ -94,7 +94,7 @@ function App() {
               history.replaceState(null, "", window.location.pathname);
             }
           }}
-          githubUrl={"https://github.com/keni/BullsCows"}
+          githubUrl={"https://github.com/krdgz/BullsCows"}
         />
       )}
       
