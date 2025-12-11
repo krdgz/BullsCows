@@ -7,6 +7,7 @@ import FormAddPlayer from "./Components/FormAddPlayer"
 import GamePlay from "./Components/GamePlay"
 import GameResults from "./Components/GameResults"
 import WinnerModal from "./Components/WinnerModal"
+import Help from "./Components/Help"
 import { resetGame } from "./utils/resetGame"
 import { useEffect } from "react"
 
@@ -27,6 +28,14 @@ function App() {
   const [currentPlayer, setCurrentPlayer] = useState(1); // Turno actual
   const [attempts, setAttempts] = useState({ 1: [], 2: [] });
   const [winnerModal, setWinnerModal] = useState({ open: false, player: null });
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useEffect(() => {
+    const handleHash = () => setHelpOpen(window.location.hash === "#help");
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   useEffect(()=>{
     if(gameStarted){
@@ -75,6 +84,17 @@ function App() {
             setWinnerModal({ open: false, player: null });
             setGameEnded(true);
           }}
+        />
+      )}
+      {helpOpen && (
+        <Help
+          onClose={() => {
+            setHelpOpen(false);
+            if (window.location.hash === "#help") {
+              history.replaceState(null, "", window.location.pathname);
+            }
+          }}
+          githubUrl={"https://github.com/keni/BullsCows"}
         />
       )}
       
