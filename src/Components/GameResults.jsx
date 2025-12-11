@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AttemptsList from "./AttemptsList";
 import SurrenderModal from "./SurrenderModal";
+import { decryptSecret } from "../utils/crypto";
 
 export default function GameResults({ player1, player2, attempts, onNewGame }) {
   const [showPlayer1Secret, setShowPlayer1Secret] = useState(false);
   const [showPlayer2Secret, setShowPlayer2Secret] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [showNewGameModal, setShowNewGameModal] = useState(false);
+  const [decryptedSecrets, setDecryptedSecrets] = useState({ p1: '', p2: '' });
 
   const activeAttempts = attempts[activeTab] || [];
+
+  useEffect(() => {
+    (async () => {
+      const p1Secret = player1.secretEnc ? await decryptSecret(player1.secretEnc, 'session-pass') : '';
+      const p2Secret = player2.secretEnc ? await decryptSecret(player2.secretEnc, 'session-pass') : '';
+      setDecryptedSecrets({ p1: p1Secret, p2: p2Secret });
+    })();
+  }, [player1, player2]);
 
   const handleNewGame = () => {
     setShowNewGameModal(false);
@@ -31,7 +41,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
                 Número secreto de {player1.name || "Jugador 1"}:
               </span>
               <span className="results__secret-value">
-                {showPlayer1Secret ? player1.secretNumber : "••••"}
+                {showPlayer1Secret ? decryptedSecrets.p1 : "••••"}
               </span>
             </button>
           </div>
@@ -46,7 +56,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
                 Número secreto de {player2.name || "Jugador 2"}:
               </span>
               <span className="results__secret-value">
-                {showPlayer2Secret ? player2.secretNumber : "••••"}
+                {showPlayer2Secret ? decryptedSecrets.p2 : "••••"}
               </span>
             </button>
           </div>

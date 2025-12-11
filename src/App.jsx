@@ -10,19 +10,18 @@ import WinnerModal from "./Components/WinnerModal"
 import Help from "./Components/Help"
 import { resetGame } from "./utils/resetGame"
 import { savePlayers, loadPlayers, saveGameState, loadGameState, getAttempts, saveSetupProgress, loadSetupProgress } from "./utils/storage"
-import { encryptSecret, decryptSecret } from "./utils/crypto"
 import { useEffect } from "react"
 
 
 function App() {
   const [player1, setPlayer1] = useState({
     name: '',
-    secretNumber: "",
+    secretEnc: "",
     color: COLOR_OPTIONS[0].value
   })
   const [player2, setPlayer2] = useState({
     name: "",
-    secretNumber: "",
+    secretEnc: "",
     color: ""
   })
   const [gameStarted, setGameStarted] = useState(false);
@@ -54,10 +53,8 @@ function App() {
     (async () => {
       await saveGameState({ gameStarted, gameEnded, currentPlayer });
       await saveSetupProgress(setupProgress.player1Done, setupProgress.player2Done);
-      if (player1.secretNumber || player2.secretNumber) {
-        const p1Enc = player1.secretNumber ? await encryptSecret(player1.secretNumber, 'session-pass') : '';
-        const p2Enc = player2.secretNumber ? await encryptSecret(player2.secretNumber, 'session-pass') : '';
-        await savePlayers({ ...player1, secretEnc: p1Enc }, { ...player2, secretEnc: p2Enc });
+      if (player1.secretEnc || player2.secretEnc) {
+        await savePlayers({ ...player1, secretEnc: player1.secretEnc }, { ...player2, secretEnc: player2.secretEnc });
       }
     })();
   }, [hydrated, gameStarted, gameEnded, currentPlayer, player1, player2, setupProgress]);
@@ -76,12 +73,10 @@ function App() {
       
       const { p1, p2 } = await loadPlayers();
       if (p1) {
-        const secretNumber = p1.secretEnc ? await decryptSecret(p1.secretEnc, 'session-pass') : '';
-        setPlayer1({ name: p1.name || '', color: p1.color || COLOR_OPTIONS[0].value, secretNumber });
+        setPlayer1({ name: p1.name || '', color: p1.color || COLOR_OPTIONS[0].value, secretEnc: p1.secretEnc || '' });
       }
       if (p2) {
-        const secretNumber = p2.secretEnc ? await decryptSecret(p2.secretEnc, 'session-pass') : '';
-        setPlayer2({ name: p2.name || '', color: p2.color || '', secretNumber });
+        setPlayer2({ name: p2.name || '', color: p2.color || '', secretEnc: p2.secretEnc || '' });
       }
       const [a1, a2] = await Promise.all([getAttempts(1), getAttempts(2)]);
       setAttempts({ 1: a1 || [], 2: a2 || [] });

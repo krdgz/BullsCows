@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { calculateResult } from "../utils/gameLogic";
 import { addAttempt } from "../utils/storage";
+import { decryptSecret } from "../utils/crypto";
 import AttemptsList from "./AttemptsList";
 import SurrenderModal from "./SurrenderModal";
 import confetti from "canvas-confetti";
@@ -19,7 +20,8 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
         e.preventDefault();
         if (guess.length !== 4) return;
 
-        const { bulls, cows } = calculateResult(opponentPlayer.secretNumber, guess);
+        const opponentSecret = await decryptSecret(opponentPlayer.secretEnc, 'session-pass');
+        const { bulls, cows } = calculateResult(opponentSecret, guess);
         const entry = { guess, bulls, cows, ts: Date.now() };
 
         setResult({ bulls, cows });

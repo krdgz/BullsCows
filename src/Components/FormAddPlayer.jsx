@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { COLOR_OPTIONS } from "../consts";
 import { useEffect } from "react";
+import { encryptSecret } from "../utils/crypto";
 
 
 export default function FormAddPlayer({
@@ -14,7 +15,7 @@ export default function FormAddPlayer({
     const getAvailableOptions = () => COLOR_OPTIONS.filter((option) => option.value !== blockedColor);
 
     const [name, setName] = useState(player.name || "");
-    const [secretNumber, setSecretNumber] = useState(player.secretNumber || "");
+    const [secretNumber, setSecretNumber] = useState(player.secretEnc || "");
     const [color, setColor] = useState(() => {
         const available = getAvailableOptions();
         if (player.color && player.color !== blockedColor) return player.color;
@@ -26,7 +27,7 @@ export default function FormAddPlayer({
     useEffect(() => {
         const available = getAvailableOptions();
         setName(player.name || "");
-        setSecretNumber(player.secretNumber || "");
+        setSecretNumber(player.secretEnc || "");
         if (player.color && player.color !== blockedColor) {
             setColor(player.color);
         } else {
@@ -34,13 +35,16 @@ export default function FormAddPlayer({
         }
     }, [currentStep, blockedColor]);
 
-    // Guardar automáticamente los cambios en el estado padre
+    // Guardar automáticamente los cambios en el estado padre (cifrar número antes de guardar)
     useEffect(() => {
-        setPlayer({
-            name,
-            secretNumber,
-            color
-        });
+        (async () => {
+            const secretEnc = secretNumber ? await encryptSecret(secretNumber, 'session-pass') : '';
+            setPlayer({
+                name,
+                secretEnc,
+                color
+            });
+        })();
     }, [name, secretNumber, color]);
 
     function validateAndNavigate() {

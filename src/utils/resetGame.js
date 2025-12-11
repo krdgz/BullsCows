@@ -19,12 +19,12 @@ export async function resetGame(setGameStarted, setCurrentPlayer, setAttempts, s
   setSetupProgress({ player1Done: false, player2Done: false });
   setPlayer1({
     name: "",
-    secretNumber: "",
+    secretEnc: "",
     color: COLOR_OPTIONS[0].value
   });
   setPlayer2({
     name: "",
-    secretNumber: "",
+    secretEnc: "",
     color: ""
   });
   
