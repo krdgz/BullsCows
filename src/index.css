@@ -9,10 +9,11 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background: #f3f4f6;
+  padding: 20px 0;
 }
 .header{
   display: flex;
@@ -166,13 +167,13 @@
 /* GamePlay Component Styles */
 .gameplay {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto;
   gap: 16px;
   max-width: 360px;
   width: 100%;
   background: #fff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
 }
 
@@ -182,6 +183,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-radius: 12px 12px 0 0;
 }
 
 .gameplay__title {
