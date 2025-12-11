@@ -1,20 +1,36 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { calculateResult } from "../utils/gameLogic";
 import { addAttempt } from "../utils/storage";
+import { saveTurnState } from "../utils/storage";
 import { decryptSecret } from "../utils/crypto";
 import AttemptsList from "./AttemptsList";
 import SurrenderModal from "./SurrenderModal";
 import confetti from "canvas-confetti";
 
-export default function GamePlay({ player1, player2, currentPlayer, setCurrentPlayer, attempts, setAttempts, onWin }) {
+export default function GamePlay({ player1, player2, currentPlayer, setCurrentPlayer, attempts, setAttempts, onWin, turnState, setTurnState }) {
     const isPlayer1 = currentPlayer === 1;
     const activePlayer = isPlayer1 ? player1 : player2;
     const opponentPlayer = isPlayer1 ? player2 : player1;
 
-    const [guess, setGuess] = useState("");
-    const [result, setResult] = useState(null);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [guess, setGuess] = useState(() => turnState?.currentPlayer === currentPlayer ? (turnState?.guess || "") : "");
+    const [result, setResult] = useState(() => turnState?.currentPlayer === currentPlayer ? (turnState?.result || null) : null);
+    const [isSubmitted, setIsSubmitted] = useState(() => turnState?.currentPlayer === currentPlayer ? (turnState?.isSubmitted || false) : false);
     const [showSurrenderModal, setShowSurrenderModal] = useState(false);
+
+    // Guardar estado del turno en DB cuando cambia
+    useEffect(() => {
+        (async () => {
+            const state = {
+                currentPlayer,
+                guess,
+                result,
+                isSubmitted
+            };
+            setTurnState(state);
+            await saveTurnState(state);
+        })();
+    }, [guess, result, isSubmitted, currentPlayer, setTurnState]);
 
     const handleGuess = async (e) => {
         e.preventDefault();
@@ -46,6 +62,7 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
         setResult(null);
         setIsSubmitted(false);
         setCurrentPlayer(isPlayer1 ? 2 : 1);
+        // El estado se guardará automáticamente en el efecto
     };
 
     const handleSurrender = () => {

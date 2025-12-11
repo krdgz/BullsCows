@@ -9,7 +9,7 @@ import GameResults from "./Components/GameResults"
 import WinnerModal from "./Components/WinnerModal"
 import Help from "./Components/Help"
 import { resetGame } from "./utils/resetGame"
-import { savePlayers, loadPlayers, saveGameState, loadGameState, getAttempts, saveSetupProgress, loadSetupProgress } from "./utils/storage"
+import { savePlayers, loadPlayers, saveGameState, loadGameState, getAttempts, saveSetupProgress, loadSetupProgress, loadTurnState } from "./utils/storage"
 import { useEffect } from "react"
 
 
@@ -32,6 +32,7 @@ function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [setupProgress, setSetupProgress] = useState({ player1Done: false, player2Done: false });
+  const [turnState, setTurnState] = useState(null);
 
   useEffect(() => {
     const handleHash = () => setHelpOpen(window.location.hash === "#help");
@@ -80,6 +81,10 @@ function App() {
       }
       const [a1, a2] = await Promise.all([getAttempts(1), getAttempts(2)]);
       setAttempts({ 1: a1 || [], 2: a2 || [] });
+      const turnState = await loadTurnState();
+      if (turnState) {
+        setTurnState(turnState);
+      }
       setHydrated(true);
     })();
   }, []);
@@ -93,7 +98,7 @@ function App() {
             player1={player1}
             player2={player2}
             attempts={attempts}
-            onNewGame={async () => await resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded, setSetupProgress)}
+            onNewGame={async () => await resetGame(setGameStarted, setCurrentPlayer, setAttempts, setPlayer1, setPlayer2, COLOR_OPTIONS, setGameEnded, setSetupProgress, setTurnState)}
           />
         ) : !setupProgress.player1Done || !setupProgress.player2Done ? (
           <FormAddPlayer
@@ -117,6 +122,8 @@ function App() {
             attempts={attempts}
             setAttempts={setAttempts}
             onWin={(player) => setWinnerModal({ open: true, player })}
+            turnState={turnState}
+            setTurnState={setTurnState}
           />
         )}
         <Footer />
@@ -127,6 +134,7 @@ function App() {
           onClose={() => {
             setWinnerModal({ open: false, player: null });
             setGameEnded(true);
+            setTurnState(null);
           }}
         />
       )}
