@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "../i18n/useTranslation";
 import AttemptsList from "./AttemptsList";
 import SurrenderModal from "./SurrenderModal";
 import { decryptSecret } from "../utils/crypto";
 
 export default function GameResults({ player1, player2, attempts, onNewGame }) {
+  const t = useTranslation();
   const [showPlayer1Secret, setShowPlayer1Secret] = useState(false);
   const [showPlayer2Secret, setShowPlayer2Secret] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
@@ -28,7 +30,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
   return (
     <>
       <div className="results">
-        <h2 className="results__title">Resultados del Juego</h2>
+        <h2 className="results__title">{t('results')}</h2>
 
         <div className="results__secrets">
           <div className="results__secret-item">
@@ -38,7 +40,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
               style={{ borderColor: player1.color }}
             >
               <span className="results__secret-label">
-                Número secreto de {player1.name || "Jugador 1"}:
+                {t('secretOf')} {player1.name || `${t('player')} 1`}:
               </span>
               <span className="results__secret-value">
                 {showPlayer1Secret ? decryptedSecrets.p1 : "••••"}
@@ -53,7 +55,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
               style={{ borderColor: player2.color }}
             >
               <span className="results__secret-label">
-                Número secreto de {player2.name || "Jugador 2"}:
+                {t('secretOf')} {player2.name || `${t('player')} 2`}:
               </span>
               <span className="results__secret-value">
                 {showPlayer2Secret ? decryptedSecrets.p2 : "••••"}
@@ -68,28 +70,28 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
             onClick={() => setActiveTab(1)}
             style={activeTab === 1 ? { borderBottomColor: player1.color } : {}}
           >
-            Ver intentos de {player1.name || "Jugador 1"}
+            {t('attemptsOf')} {player1.name || `${t('player')} 1`}
           </button>
           <button
             className={`results__tab ${activeTab === 2 ? "results__tab--active" : ""}`}
             onClick={() => setActiveTab(2)}
             style={activeTab === 2 ? { borderBottomColor: player2.color } : {}}
           >
-            Ver intentos de {player2.name || "Jugador 2"}
+            {t('attemptsOf')} {player2.name || `${t('player')} 2`}
           </button>
         </div>
 
         <div className="results__attempts">
           {activeAttempts.length === 0 ? (
-            <p className="results__empty">Sin intentos registrados</p>
+            <p className="results__empty">{t('noAttempts')}</p>
           ) : (
             <ul className="attempts__list">
               {activeAttempts.map((item) => (
                 <li key={item.ts} className="attempts__item">
                   <div className="attempts__guess">{item.guess}</div>
                   <div className="attempts__result">
-                    <span className="attempts__pill attempts__pill--bull">Toros: {item.bulls}</span>
-                    <span className="attempts__pill attempts__pill--cow">Vacas: {item.cows}</span>
+                    <span className="attempts__pill attempts__pill--bull">{t('bulls')}: {item.bulls}</span>
+                    <span className="attempts__pill attempts__pill--cow">{t('cows')}: {item.cows}</span>
                   </div>
                 </li>
               ))}
@@ -101,7 +103,7 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
           className="results__new-game"
           onClick={() => setShowNewGameModal(true)}
         >
-          Nuevo Juego
+          {t('newGame')}
         </button>
       </div>
 
@@ -109,9 +111,9 @@ export default function GameResults({ player1, player2, attempts, onNewGame }) {
         <SurrenderModal
           onConfirm={handleNewGame}
           onCancel={() => setShowNewGameModal(false)}
-          title="¿Comenzar un nuevo juego?"
-          message="Se perderán todos los datos del juego actual."
-          confirmText="Nuevo Juego"
+          title={t('newGameQuestion')}
+          message={t('newGameMessage')}
+          confirmText={t('newGameConfirm')}
         />
       )}
     </>

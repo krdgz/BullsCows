@@ -2,6 +2,7 @@ import { useState } from "react";
 import { COLOR_OPTIONS } from "../consts";
 import { useEffect } from "react";
 import { encryptSecret } from "../utils/crypto";
+import { useTranslation } from "../i18n/useTranslation";
 
 
 export default function FormAddPlayer({
@@ -12,6 +13,7 @@ export default function FormAddPlayer({
     setGameStarted,
     onStepComplete
 }) {
+    const t = useTranslation();
     const getAvailableOptions = () => COLOR_OPTIONS.filter((option) => option.value !== blockedColor);
 
     const [name, setName] = useState(player.name || "");
@@ -22,7 +24,7 @@ export default function FormAddPlayer({
         return available[0]?.value || "";
     });
     const [error, setError] = useState("");
-    const title = currentStep === 1 ? "Jugador 1" : "Jugador 2";
+    const title = currentStep === 1 ? `${t('player')} 1` : `${t('player')} 2`;
 
     useEffect(() => {
         const available = getAvailableOptions();
@@ -50,16 +52,16 @@ export default function FormAddPlayer({
     function validateAndNavigate() {
         const digitsOnly = /^[0-9]{4}$/;
         if(secretNumber[0] === "0"){  
-            setError("El número secreto no puede comenzar con 0.")
+            setError(t('errors.noLeadingZero'))
             return false
         }
 
         if (!digitsOnly.test(secretNumber)) {
-            setError("Ingresa un número de 4 cifras (solo dígitos).");
+            setError(t('errors.invalidFormat'));
             return false;
         }
         if (new Set(secretNumber).size !== 4) {
-            setError("El número secreto no debe tener cifras repetidas.");
+            setError(t('errors.duplicateDigits'));
             return false;
         }
         setError("");
@@ -96,19 +98,19 @@ export default function FormAddPlayer({
             </header>
 
             <label className="player-form__label">
-                <span className="player-form__label-text">Nombre</span>
+                <span className="player-form__label-text">{t('name')}</span>
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value.trim())}
-                    placeholder="Tu nombre (opcional)"
+                    placeholder={t('namePlaceholder')}
                     autoComplete="off"
                     className="player-form__input"
                 />
             </label>
 
             <label className="player-form__label">
-                <span className="player-form__label-text">Número secreto (4 cifras)</span>
+                <span className="player-form__label-text">{t('secretNumber')}</span>
                 <input
                     type="password"
                     value={secretNumber}
@@ -122,7 +124,7 @@ export default function FormAddPlayer({
             </label>
 
             <label className="player-form__label">
-                <span className="player-form__label-text">Color</span>
+                <span className="player-form__label-text">{t('color')}</span>
                 <select
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
@@ -148,11 +150,11 @@ export default function FormAddPlayer({
                         onClick={handleBack}
                         className="player-form__submit"
                     >
-                        Jugador 1
+                        {t('player')} 1
                     </button>
                 )}
                 <button type="submit" style={{background: color}} className="player-form__submit">
-                    {currentStep === 1 ? "Siguiente" : "Iniciar juego"}
+                    {currentStep === 1 ? t('next') : t('startGame')}
                 </button>
             </div>
 

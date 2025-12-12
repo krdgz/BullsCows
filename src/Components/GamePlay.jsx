@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import { useTranslation } from "../i18n/useTranslation";
 import { calculateResult } from "../utils/gameLogic";
 import { addAttempt } from "../utils/storage";
 import { saveTurnState } from "../utils/storage";
@@ -9,6 +10,7 @@ import SurrenderModal from "./SurrenderModal";
 import confetti from "canvas-confetti";
 
 export default function GamePlay({ player1, player2, currentPlayer, setCurrentPlayer, attempts, setAttempts, onWin, turnState, setTurnState }) {
+    const t = useTranslation();
     const isPlayer1 = currentPlayer === 1;
     const activePlayer = isPlayer1 ? player1 : player2;
     const opponentPlayer = isPlayer1 ? player2 : player1;
@@ -75,21 +77,21 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
             <div className="gameplay">
                 <div className="gameplay__header" style={{ background: activePlayer.color }}>
                     <h2 className="gameplay__title">
-                        Jugador {currentPlayer}: {activePlayer.name}
+                        {t('player')} {currentPlayer}: {activePlayer.name}
                     </h2>
                     <button
                         type="button"
                         className="gameplay__surrender"
                         onClick={() => setShowSurrenderModal(true)}
                     >
-                        Rendirse
+                        {t('surrender')}
                     </button>
                 </div>
 
                 <div className="gameplay__container">
                     <form onSubmit={handleGuess} className="gameplay__form">
                         <label className="gameplay__label">
-                            <span className="gameplay__label-text">Adivina el número (4 cifras)</span>
+                            <span className="gameplay__label-text">{t('guessLabel')}</span>
                             <input
                                 type="text"
                                 value={guess}
@@ -111,18 +113,18 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
                             }}
                             className="gameplay__submit"
                         >
-                            Adivinar
+                            {t('guess')}
                         </button>
                     </form>
 
                     {result && (
                         <div className="gameplay__result">
                             <p className="gameplay__result-item">
-                                <span className="gameplay__result-label">Toros:</span>
+                                <span className="gameplay__result-label">{t('bulls')}:</span>
                                 <span className="gameplay__result-value">{result.bulls}</span>
                             </p>
                             <p className="gameplay__result-item">
-                                <span className="gameplay__result-label">Vacas:</span>
+                                <span className="gameplay__result-label">{t('cows')}:</span>
                                 <span className="gameplay__result-value">{result.cows}</span>
                             </p>
                         </div>
@@ -135,7 +137,7 @@ export default function GamePlay({ player1, player2, currentPlayer, setCurrentPl
                             style={{ background: activePlayer.color }}
                             className="gameplay__next"
                         >
-                            Siguiente Turno
+                            {t('nextTurn')}
                         </button>
                     )}
 

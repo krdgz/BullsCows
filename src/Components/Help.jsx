@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useTranslation } from "../i18n/useTranslation";
 
 export default function Help({ onClose, githubUrl = "https://github.com" }) {
+  const t = useTranslation();
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -15,27 +17,26 @@ export default function Help({ onClose, githubUrl = "https://github.com" }) {
       <div className="modal__content" style={{ background: "#111827" }}>
         <button className="modal__close" onClick={onClose} aria-label="Cerrar">×</button>
         <div className="modal__body">
-          <h2 className="modal__title">Ayuda</h2>
+          <h2 className="modal__title">{t('helpTitle')}</h2>
           <p className="modal__text">
-            Toros y Vacas es un juego de lógica. Cada jugador define un número secreto de 4 dígitos.
-            En tu turno, intenta adivinar el número del oponente: "Toros" son dígitos correctos en posición correcta; "Vacas" son dígitos correctos pero en posición distinta.
+            {t('helpDescription')}
           </p>
           <p className="modal__text">
-            Reglas rápidas:
+            {t('helpRules')}
           </p>
           <ul style={{lineHeight: 1.6, paddingLeft: 18 }}>
-            <li style={{color:"#ffff"}}>Usa sólo dígitos (0-9) y máximo 4 cifras por intento.</li>
-            <li style={{color:"#ffff"}}>Tras "Adivinar", verás los toros y vacas de ese intento.</li>
-            <li style={{color:"#ffff"}}>Ganas con 4 toros. Puedes rendirte desde la cinta superior.</li>
+            <li style={{color:"#ffff"}}>{t('helpBulls')}</li>
+            <li style={{color:"#ffff"}}>{t('helpCows')}</li>
+            <li style={{color:"#ffff"}}>{t('helpWin')}</li>
           </ul>
           <p className="modal__text">
-            Si este proyecto te es útil, apóyame con una estrella en GitHub.
+            {t('helpStar')}
           </p>
           <div className="modal__actions">
             <a className="modal__btn modal__btn--secondary" href={githubUrl} target="_blank" rel="noopener noreferrer">
-              Dar estrella ⭐
+              {t('giveStar')} ⭐
             </a>
-            <button className="modal__btn modal__btn--danger" onClick={onClose}>Cerrar</button>
+            <button className="modal__btn modal__btn--danger" onClick={onClose}>{t('close')}</button>
           </div>
         </div>
       </div>

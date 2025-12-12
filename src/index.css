@@ -40,6 +40,35 @@
 }
 
 
+/* Language Switcher Styles */
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.language-switcher__btn {
+  background: #f3f4f6;
+  border: 2px solid transparent;
+  color: #6b7280;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.language-switcher__btn:hover {
+  background: #e5e7eb;
+}
+
+.language-switcher__btn--active {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
 /* Footer Component Styles */
 .footer {
   width: 100%;

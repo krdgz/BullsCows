@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useTranslation } from "../i18n/useTranslation";
 
 export default function WinnerModal({ player, onClose }) {
+  const t = useTranslation();
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -18,7 +20,7 @@ export default function WinnerModal({ player, onClose }) {
         <button className="modal__close" onClick={onClose} aria-label="Cerrar">×</button>
         <div className="modal__body">
           <p className="modal__eyebrow">¡Felicidades!</p>
-          <h2 className="modal__title">{player.name || `Jugador`} ha ganado</h2>
+          <h2 className="modal__title">{player.name || t('player')} {t('won')}</h2>
         </div>
       </div>
     </div>
