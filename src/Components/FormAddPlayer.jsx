@@ -81,7 +81,7 @@ export default function FormAddPlayer({
     }
 
     function handleBack() {
-        if (!validateAndNavigate()) return;
+        setError("");
         onStepComplete?.(1);
     }
     
